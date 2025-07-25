@@ -1,12 +1,22 @@
-const mongoose = require('mongoose');
-const app = require('./app');
+// server.js
+const express = require('express');
+const app = express();
 require('dotenv').config();
 
-const PORT = process.env.PORT || 4000;
+const leadRoutes = require('./routes/lead.routes');
+const authRoutes = require('./routes/auth.routes');
+const errorMiddleware = require('./middleware/errorMiddleware');
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('MongoDB conectado');
-    app.listen(PORT, () => console.log(`Servidor en http://localhost:${PORT}`));
-  })
-  .catch(err => console.error('Error al conectar MongoDB', err));
+app.use(express.json());
+
+// Rutas públicas y protegidas
+app.use('/api/auth', authRoutes);
+app.use('/api/leads', leadRoutes); // protegidas con authMiddleware dentro de leadRoutes
+
+// Middleware para manejo de errores
+app.use(errorMiddleware);
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});

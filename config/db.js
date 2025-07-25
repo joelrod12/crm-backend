@@ -2,24 +2,32 @@ const sql = require('mssql');
 require('dotenv').config();
 
 const config = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER, 
+  server: process.env.DB_SERVER,
   database: process.env.DB_NAME,
   options: {
-    encrypt: true, // para Azure
-    trustServerCertificate: true, // para entornos locales
+    trustServerCertificate: true
   },
+  authentication: {
+    type: 'ntlm',
+    options: {
+      userName: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      domain: process.env.DB_DOMAIN
+    }
+  }
 };
 
 const poolPromise = new sql.ConnectionPool(config)
   .connect()
   .then(pool => {
-    console.log('Conectado a SQL Server');
+    console.log('✅ Conectado a SQL Server');
     return pool;
   })
-  .catch(err => console.log('Error de conexión a DB:', err));
+  .catch(err => {
+    console.error('❌ Error de conexión a SQL Server', err);
+  });
 
 module.exports = {
-  sql, poolPromise
+  sql,
+  poolPromise
 };

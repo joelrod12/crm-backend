@@ -1,15 +1,8 @@
-// services/notificationService.js
-const axios = require('axios');
+async function notifyNewLead({ name, email, message }) {
+  // Aquí puedes integrar envío de email o mensaje a Slack
+  console.log(`Nuevo lead creado: ${name} - ${email} - ${message}`);
+}
 
-const sendNotification = async (lead) => {
-    try {
-        // Ejemplo con Slack webhook
-        await axios.post(process.env.SLACK_WEBHOOK_URL, {
-            text: `📥 Nuevo lead: ${lead.name} - ${lead.email}`,
-        });
-    } catch (error) {
-        console.error('Error enviando notificación:', error.message);
-    }
+module.exports = {
+  notifyNewLead,
 };
-
-module.exports = { sendNotification };
