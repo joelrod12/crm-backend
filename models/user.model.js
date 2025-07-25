@@ -1,22 +1,17 @@
-const { poolPromise, sql } = require('../config/db');
+const pool = require('../config/db');
 const bcrypt = require('bcryptjs');
 
 async function findUserByEmail(email) {
-  const pool = await poolPromise;
-  const result = await pool.request()
-    .input('email', sql.VarChar, email)
-    .query('SELECT * FROM Users WHERE email = @email');
-  return result.recordset[0];
+  const [rows] = await pool.query('SELECT * FROM Users WHERE email = ?', [email]);
+  return rows[0];
 }
 
 async function createUser({ name, email, password }) {
   const hashedPassword = await bcrypt.hash(password, 10);
-  const pool = await poolPromise;
-  await pool.request()
-    .input('name', sql.VarChar, name)
-    .input('email', sql.VarChar, email)
-    .input('password', sql.VarChar, hashedPassword)
-    .query('INSERT INTO Users (name, email, password) VALUES (@name, @email, @password)');
+  await pool.query(
+    'INSERT INTO Users (name, email, password) VALUES (?, ?, ?)',
+    [name, email, hashedPassword]
+  );
 }
 
 module.exports = {

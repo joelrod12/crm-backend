@@ -1,22 +1,19 @@
-const { poolPromise, sql } = require('../config/db');
+const pool = require('../config/db');
 
 async function getLeads() {
-  const pool = await poolPromise;
-  const result = await pool.request().query('SELECT * FROM Leads');
-  return result.recordset;
+  const [rows] = await pool.query('SELECT * FROM Leads');
+  return rows;
 }
 
 async function createLead({ name, email, message }) {
-  const pool = await poolPromise;
-  const result = await pool.request()
-    .input('name', sql.VarChar, name)
-    .input('email', sql.VarChar, email)
-    .input('message', sql.Text, message)
-    .query('INSERT INTO Leads (name, email, message) VALUES (@name, @email, @message)');
+  const [result] = await pool.query(
+    'INSERT INTO Leads (name, email, message) VALUES (?, ?, ?)',
+    [name, email, message]
+  );
   return result;
 }
 
 module.exports = {
   getLeads,
-  createLead, 
+  createLead,
 };
