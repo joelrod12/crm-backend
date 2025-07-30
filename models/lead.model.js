@@ -5,10 +5,10 @@ async function getLeads() {
   return rows;
 }
 
-async function createLead({ name, email, message }) {
+async function createLead({ name, email, message, phone }) {
   const [result] = await pool.query(
-    'INSERT INTO Leads (name, email, message) VALUES (?, ?, ?)',
-    [name, email, message]
+    'INSERT INTO Leads (name, email, message, phone) VALUES (?, ?, ?, ?)',
+    [name, email, message, phone]
   );
   return result;
 }
